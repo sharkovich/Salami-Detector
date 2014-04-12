@@ -13,6 +13,12 @@ import org.opencv.imgproc.Imgproc;
 
 public class SalamiDetector {
 
+	/**
+	 * Finds contour of image using OpenCV's Canny.
+	 * @param src
+	 * @param thresholdValue
+	 * @return
+	 */
 	public Mat contourFinder(Mat src, int thresholdValue) {
 			
 		Mat edges = new Mat();
@@ -29,9 +35,18 @@ public class SalamiDetector {
 		for (int i = 0; i < contours.size(); i++) {
 			Imgproc.drawContours(contourDrawing, contours, i, new Scalar(255, 255, 255));
 		}
+		System.out.printf("Contours found: %d\n", contours.size());
 		return contourDrawing;
 	}
 
+	/**
+	 * Prepares an image for further contour detecting. 
+	 * Converts image to grayscale, equalizes it's histogram then
+	 * uses binary threshold and gaussian blur.
+	 * @param filename
+	 * @param thresholdValue
+	 * @return
+	 */
 	public Mat prepareImage(String filename, int thresholdValue) {
 		
 		Mat src = Highgui.imread(filename);

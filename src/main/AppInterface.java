@@ -1,4 +1,4 @@
-package salamidetector;
+package main;
 
 
 import imageutils.ImageUtils;
@@ -7,8 +7,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -18,12 +16,12 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
@@ -31,9 +29,12 @@ import org.eclipse.swt.widgets.Text;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
-public class AppInterface {
+import salamidetector.SalamiDetector;
 
+public class AppInterface {
+	
 	protected Shell shlSalamiDetector;
+	
 	private Text textPT;
 	private Text text;
 	private int binaryThersholdValue = 100;
@@ -41,12 +42,13 @@ public class AppInterface {
 	private File file;
 	private Image image;
 	private String[] extensions = {"*.png","*.jpg", "*.jpeg","*.bmp"};
-	private int width, height;
+
 	/**
 	 * Launch the application.
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		try {
 			AppInterface window = new AppInterface();
 			window.open();
@@ -71,10 +73,10 @@ public class AppInterface {
 		if (image != null) image.dispose();
 	}
 
-	public int readSlider(Scale a) {
-		return a.getSelection();
-
-	}
+	/**
+	 * Opens file dialog for choosing a file to open.
+	 * @return 
+	 */
 	public File getFilename()
 	{
 		FileDialog fd = new FileDialog(shlSalamiDetector);
@@ -94,19 +96,7 @@ public class AppInterface {
 		}
 		
 	}
-	public void disposeChildren(Composite c) {
-		if (c.getChildren().length != 0) {
-			System.out.printf("Disposing previous image...\n");
-			for (Control ctrl : c.getChildren()) {
-				ctrl.dispose();
-			}
-		}
-	}
-	public void setDimensions(Composite c) {
-		width = c.getBounds().width;
-		height = c.getBounds().height;
-		
-	}
+
 
 	/**
 	 * Create contents of the window.
@@ -141,27 +131,12 @@ public class AppInterface {
 		btnOpen.setLayoutData(fd_btnOpen);
 		btnOpen.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				
+			public void widgetSelected(SelectionEvent e) {			
 				file = getFilename();
 				if (file!=null) {
-					disposeChildren(composite);
-					setDimensions(composite);
-					ImageData tmpData = new ImageData(file.getAbsolutePath());
-					image = new Image(shlSalamiDetector.getDisplay(), ImageUtils.scaleImageTo(tmpData, width, height));
-
-					
-					Canvas pictureFrame = new Canvas(composite, SWT.NONE);
-					pictureFrame.setBounds(0, 0, width, height);
-					pictureFrame.addPaintListener(new PaintListener() {
-						public void paintControl(PaintEvent arg0) {
-							if (image != null) {
-								arg0.gc.drawImage(image, 0, 0);				
-							}
-						}
-					});				
+					ImageData tmpData = new ImageData(file.getAbsolutePath());			
+					ImageUtils.drawImageIn(composite, tmpData);
 				}
-
 			}
 		});
 		btnOpen.setText("Open");
@@ -181,27 +156,21 @@ public class AppInterface {
 				
 				if (file != null) {
 					
-					disposeChildren(composite);
-					setDimensions(composite);
 					SalamiDetector sd = new SalamiDetector();
 					Mat imageMat = sd.contourFinder(sd.prepareImage(file.getAbsolutePath(), binaryThersholdValue),contourThresholdvalue);
-
-					try {	
-						image = new Image(shlSalamiDetector.getDisplay(), ImageUtils.scaleImageTo(ImageUtils.matToImageData(imageMat), width, height));
-					} catch (IOException e1) {
+					
+					ImageData imageData;
+					
+					try {
+						imageData = ImageUtils.matToImageData(imageMat);
+						ImageUtils.drawImageIn(composite, imageData);
+					} catch (IOException e2) {
 						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						e2.printStackTrace();
 					}
-					Canvas pictureFrame = new Canvas(composite, SWT.NONE);
-					pictureFrame.setBounds(0, 0, width, height);
-					pictureFrame.addPaintListener(new PaintListener() {
-						public void paintControl(PaintEvent arg0) {
-							if (image != null) {
-								arg0.gc.drawImage(image, 0, 0);					
-							}
+					
 
-						}
-					});
+					
 				} else {
 					MessageBox mb = new MessageBox(shlSalamiDetector);
 					mb.setMessage("No file selected!");
@@ -289,17 +258,64 @@ public class AppInterface {
 		btnClear.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				disposeChildren(composite);
-				file = null;
+				ImageUtils.disposeChildren(composite);
 			}
 		});
 		btnClear.setText("Clear");
+		
+		Menu menu = new Menu(shlSalamiDetector, SWT.BAR);
+		shlSalamiDetector.setMenuBar(menu);
+		
+		MenuItem mntmFile_1 = new MenuItem(menu, SWT.CASCADE);
+		mntmFile_1.setText("File");
+		
+		Menu menu_1 = new Menu(mntmFile_1);
+		mntmFile_1.setMenu(menu_1);
+		
+		MenuItem mntmNewItem = new MenuItem(menu_1, SWT.NONE);
+		mntmNewItem.setText("Open Image");
+		
+		MenuItem mntmNewItem_2 = new MenuItem(menu_1, SWT.NONE);
+		mntmNewItem_2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ImageUtils.disposeChildren(composite);
+				file = null;
+			}
+		});
+		mntmNewItem_2.setText("Clear");
+		
+		new MenuItem(menu_1, SWT.SEPARATOR);
+		
+		MenuItem mntmNewItem_3 = new MenuItem(menu_1, SWT.NONE);
+		mntmNewItem_3.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				shlSalamiDetector.dispose();
+			}
+		});
+		mntmNewItem_3.setText("Exit");
+		
+		MenuItem mntmHelp = new MenuItem(menu, SWT.CASCADE);
+		mntmHelp.setText("Help");
+		
+		Menu menu_2 = new Menu(mntmHelp);
+		mntmHelp.setMenu(menu_2);
+		
+		MenuItem mntmNewItem_1 = new MenuItem(menu_2, SWT.NONE);
+		mntmNewItem_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				AboutWindow aw = new AboutWindow(shlSalamiDetector, SWT.SHELL_TRIM & (~SWT.RESIZE));
+				aw.open();
+			}
+		});
+		mntmNewItem_1.setText("About");
 		
 
 		
 
 
 	}
-
 }
 
