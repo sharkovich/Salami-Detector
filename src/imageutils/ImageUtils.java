@@ -12,7 +12,6 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.highgui.Highgui;
@@ -28,7 +27,7 @@ public class ImageUtils {
 	public static ImageData matToImageData (Mat image) throws IOException
 	{
 		System.out.print("Converting OpenCV's Mat to image...\n");
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		
 		Mat image_tmp = image;
 		
 		MatOfByte matOfByte = new MatOfByte();
@@ -59,14 +58,15 @@ public class ImageUtils {
 
 		int width_im = imageData.width;
 		int height_im = imageData.height;
-		System.out.printf("Scaling image (%dx%d) to fit container of %dx%d dimensions...\n", width_im, height_im, width, height);
+
 		double factor;
 		
-		if (width_im >= width) {
+		if (width_im > width) {
 			factor = (double)width/(double)width_im;
-			
-		} else if (height_im >= height) {
+			System.out.printf("Scaling image (%dx%d) to fit container of %dx%d dimensions...\n", width_im, height_im, width, height);
+		} else if (height_im > height) {
 			factor = (double)height/(double)height_im;
+			System.out.printf("Scaling image (%dx%d) to fit container of %dx%d dimensions...\n", width_im, height_im, width, height);
 		} else {
 			factor = 1;
 		}
@@ -110,10 +110,11 @@ public class ImageUtils {
 					arg0.gc.drawImage(image, 0, 0);							
 				}
 			});				
-		}
-
-		
+		}	
 	}
+	
+	
+	
 
 }
 	

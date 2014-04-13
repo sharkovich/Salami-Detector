@@ -6,6 +6,8 @@ import imageutils.ImageUtils;
 import java.io.File;
 import java.io.IOException;
 
+import libloader.LibraryLoad;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,7 +28,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
 import salamidetector.SalamiDetector;
@@ -48,7 +49,11 @@ public class AppInterface {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		
+		LibraryLoad ll = new LibraryLoad();
+		ll.loadLibrary();
+		//System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		
 		try {
 			AppInterface window = new AppInterface();
 			window.open();
@@ -63,6 +68,11 @@ public class AppInterface {
 	public void open() {
 		Display display = Display.getDefault();
 		createContents();
+		
+		Image icon = new Image(shlSalamiDetector.getDisplay(), AppInterface.class.getResourceAsStream("/res/icon.png"));
+		//Image icon = new Image(shlSalamiDetector.getDisplay(), "res/icon.png");
+		shlSalamiDetector.setImage(icon);
+		
 		shlSalamiDetector.open();
 		shlSalamiDetector.layout();
 		while (!shlSalamiDetector.isDisposed()) {
@@ -80,6 +90,12 @@ public class AppInterface {
 	public File getFilename()
 	{
 		FileDialog fd = new FileDialog(shlSalamiDetector);
+		
+	
+
+		
+		
+		
 		
 		fd.setFilterExtensions(extensions);
 		fd.setFilterPath("C:\\");
@@ -108,7 +124,7 @@ public class AppInterface {
 
 
 
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		//System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		shlSalamiDetector.setLayout(new FormLayout());
 		
 		final Composite composite = new Composite(shlSalamiDetector, SWT.BORDER);
@@ -306,7 +322,7 @@ public class AppInterface {
 		mntmNewItem_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				AboutWindow aw = new AboutWindow(shlSalamiDetector, SWT.SHELL_TRIM & (~SWT.RESIZE));
+				AboutWindow aw = new AboutWindow(shlSalamiDetector, SWT.SMOOTH & (~SWT.RESIZE));
 				aw.open();
 			}
 		});

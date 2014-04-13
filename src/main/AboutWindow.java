@@ -57,7 +57,7 @@ public class AboutWindow extends Dialog {
 		
 		Label lblNewLabel_1 = new Label(shlAboutSalamiDetector, SWT.NONE);
 		lblNewLabel_1.setText("This computer software is distributed under GNU\r\nGeneral Public Licence.\r\n\r\n\r\nhttps://www.gnu.org/licenses/gpl.html");
-		lblNewLabel_1.setBounds(10, 180, 266, 82);
+		lblNewLabel_1.setBounds(20, 180, 266, 82);
 		
 		Button btnClose = new Button(shlAboutSalamiDetector, SWT.NONE);
 		btnClose.addSelectionListener(new SelectionAdapter() {
@@ -66,17 +66,18 @@ public class AboutWindow extends Dialog {
 				shlAboutSalamiDetector.dispose();
 			}
 		});
-		btnClose.setBounds(366, 228, 68, 34);
+		btnClose.setBounds(339, 216, 95, 46);
 		btnClose.setText("Close");
 		
 		Label lblNewLabel = new Label(shlAboutSalamiDetector, SWT.NONE);
-		lblNewLabel.setBounds(246, 85, 167, 34);
+		lblNewLabel.setBounds(267, 84, 167, 34);
 		lblNewLabel.setText("Author: Igor Boczkaja\r\ne-mail: boczkaja@gmail.com");
 		
 		final Composite composite = new Composite(shlAboutSalamiDetector, SWT.NONE);
-		composite.setBounds(10, 40, 188, 101);
+		composite.setBounds(20, 48, 200, 99);
 		
-		ImageData logo = new ImageData("res/gpl_logo.png");
+		ImageData logo = new ImageData(AboutWindow.class.getResourceAsStream("/res/gpl_logo.png"));
+
 		ImageUtils.drawImageIn(composite, logo);
 			
 	}
