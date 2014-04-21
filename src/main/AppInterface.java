@@ -6,8 +6,6 @@ import imageutils.ImageUtils;
 import java.io.File;
 import java.io.IOException;
 
-import libloader.LibraryLoad;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -42,25 +40,20 @@ public class AppInterface {
 	private int contourThresholdvalue = 150;
 	private File file;
 	private Image image;
-	private String[] extensions = {"*.png","*.jpg", "*.jpeg","*.bmp"};
 
-	/**
-	 * Launch the application.
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		
-		LibraryLoad ll = new LibraryLoad();
-		ll.loadLibrary();
-		//System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		
-		try {
-			AppInterface window = new AppInterface();
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	private static final String[] FILTER_NAMES = {
+		"Image files (*.bmp;*.png;*.jpg;*.jpeg)",
+		"JPEG (*.jpg;*.jpeg)",
+	    "BMP (*.bmp)",
+	    "PNG (*.png)",
+	    "All Files (*.*)"};
+
+	  private static final String[] FILTER_EXTS = {
+		"*.bmp;*.png;*.jpg;*.jpeg",
+		"*.jpg;*.jpeg",
+	  	"*.bmp",
+	  	"*.png",
+	  	"*.*"};
 
 	/**
 	 * Open the window.
@@ -70,7 +63,7 @@ public class AppInterface {
 		createContents();
 		
 		Image icon = new Image(shlSalamiDetector.getDisplay(), AppInterface.class.getResourceAsStream("/res/icon.png"));
-		//Image icon = new Image(shlSalamiDetector.getDisplay(), "res/icon.png");
+
 		shlSalamiDetector.setImage(icon);
 		
 		shlSalamiDetector.open();
@@ -91,13 +84,8 @@ public class AppInterface {
 	{
 		FileDialog fd = new FileDialog(shlSalamiDetector);
 		
-	
-
-		
-		
-		
-		
-		fd.setFilterExtensions(extensions);
+		fd.setFilterNames(FILTER_NAMES);
+		fd.setFilterExtensions(FILTER_EXTS);
 		fd.setFilterPath("C:\\");
 		
 		String path = fd.open();
@@ -116,15 +104,13 @@ public class AppInterface {
 
 	/**
 	 * Create contents of the window.
+	 * @wbp.parser.entryPoint
 	 */
 	protected void createContents() {
 		shlSalamiDetector = new Shell(SWT.SHELL_TRIM & (~SWT.RESIZE));
 		shlSalamiDetector.setSize(667, 768);
 		shlSalamiDetector.setText("Salami Detector");
 
-
-
-		//System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		shlSalamiDetector.setLayout(new FormLayout());
 		
 		final Composite composite = new Composite(shlSalamiDetector, SWT.BORDER);
@@ -133,10 +119,6 @@ public class AppInterface {
 		fd_composite.top = new FormAttachment(0, 129);
 		composite.setLayoutData(fd_composite);
 		composite.setLayout(new FillLayout(SWT.HORIZONTAL));
-		
-
-		
-		
 		
 		Button btnOpen = new Button(shlSalamiDetector, SWT.NONE);
 		FormData fd_btnOpen = new FormData();
@@ -289,6 +271,16 @@ public class AppInterface {
 		mntmFile_1.setMenu(menu_1);
 		
 		MenuItem mntmNewItem = new MenuItem(menu_1, SWT.NONE);
+		mntmNewItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {			
+				file = getFilename();
+				if (file!=null) {
+					ImageData tmpData = new ImageData(file.getAbsolutePath());			
+					ImageUtils.drawImageIn(composite, tmpData);
+				}
+			}
+		});
 		mntmNewItem.setText("Open Image");
 		
 		MenuItem mntmNewItem_2 = new MenuItem(menu_1, SWT.NONE);

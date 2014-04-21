@@ -54,7 +54,7 @@ public class SalamiDetector {
 		Mat dst = new Mat(src.size(), src.type());
 
 		
-		//Konwersja obrazu na skale szaroœci.
+		//Konwersja obrazu na skale szaroÅ›ci.
 		System.out.printf("Preparing image...\n");
 		if (src.empty()) {}
 		else if (src.channels()>1) {

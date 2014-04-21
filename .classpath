@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/OpenCV-2.4.8"/>
-	<classpathentry kind="lib" path="D:/dev/Java/lib/Imshow.jar.zip"/>
-	<classpathentry exported="true" kind="lib" path="D:/Programy/eclipse/plugins/org.eclipse.swt.win32.win32.x86_64_3.102.1.v20140206-1358.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_05"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/OpenCV-2.4.8(64_bit)"/>
+	<classpathentry kind="lib" path="D:/dev/Java/Salami Detector/lib/swt_win32_x64.jar"/>
+	<classpathentry kind="lib" path="D:/dev/Java/Salami Detector/lib/swt_win32_x86.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
