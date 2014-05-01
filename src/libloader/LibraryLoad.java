@@ -11,8 +11,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 
-public class LibraryLoad {
-	public void loadOpenCVLibrary() {
+public class LibraryLoad implements Runnable {
+	private void loadOpenCVLibrary() {
 	    try {
 
 	        File fileOut = null;
@@ -65,7 +65,7 @@ public class LibraryLoad {
 	    }
 	}
 	
-	public void loadSwtJar() {
+	private void loadSwtJar() {
 		String swtFileName = null;
 	    try {
 	        String osName = System.getProperty("os.name").toLowerCase();
@@ -93,6 +93,14 @@ public class LibraryLoad {
 	        System.out.println("Unable to add the swt jar to the class path: " + swtFileName);
 	        e.printStackTrace();
 	    }
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		loadOpenCVLibrary();
+		loadSwtJar();
+		
 	}
 
 

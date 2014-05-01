@@ -6,8 +6,7 @@ public class Run {
 	public static void main(String[] args) {
 
 		LibraryLoad ll = new LibraryLoad();
-		ll.loadSwtJar();
-		ll.loadOpenCVLibrary();
+		ll.run();
 
 		
 		try {

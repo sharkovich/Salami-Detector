@@ -2,6 +2,7 @@ package salamidetector;
 
 import java.util.ArrayList;
 
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -66,8 +67,31 @@ public class SalamiDetector {
 
 		Imgproc.equalizeHist(src_gray, dst);
 		Imgproc.threshold(dst, dst, thresholdValue, 255, Imgproc.THRESH_BINARY);
+		Imgproc.erode(dst, dst, Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(5, 5)));
+		Imgproc.dilate(dst, dst, Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(5, 5)));
+		
 		Imgproc.GaussianBlur(dst, dst, new Size(11, 11), 0);
+		
 		return dst;
 	}
 
+	public Mat hsvDetection(String filename, int hHigh, int hLow, int sHigh, int sLow, int vHigh, int vLow) {
+		Mat src = Highgui.imread(filename);
+		Mat src_hsv = new Mat(src.size(), src.type());
+		if (src.empty()) {}
+		else {
+		    Imgproc.cvtColor(src, src_hsv, Imgproc.COLOR_BGR2HSV);
+		} 
+		
+		Mat thresholded = new Mat(src.size(), CvType.CV_8U);
+		Core.inRange(src_hsv, new Scalar(hLow, sLow, vLow), new Scalar(hHigh, sHigh, vHigh), thresholded);
+		Imgproc.threshold(thresholded, thresholded, 100, 255, Imgproc.THRESH_BINARY);
+		Imgproc.erode(thresholded, thresholded, Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(10, 10)));
+		Imgproc.dilate(thresholded, thresholded, Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(10, 10)));
+		
+		return thresholded;
+		
+	}
+
 }
+

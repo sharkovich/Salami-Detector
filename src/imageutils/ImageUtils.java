@@ -38,6 +38,7 @@ public class ImageUtils {
 	    
 
         InputStream in = new ByteArrayInputStream(byteArray);
+        
 	    ImageData id = new ImageData(in);
 	    id.width = (int)image.size().width;
 	    id.height = (int)image.size().height;
@@ -56,20 +57,20 @@ public class ImageUtils {
 	public static ImageData scaleImageTo (ImageData imageData, int width, int height)
 	{
 
-		int width_im = imageData.width;
+		int width_im = imageData.width;	
 		int height_im = imageData.height;
 
 		double factor;
 		
-		if (width_im > width) {
+		if (width_im > height_im && height_im < height)
 			factor = (double)width/(double)width_im;
-			System.out.printf("Scaling image (%dx%d) to fit container of %dx%d dimensions...\n", width_im, height_im, width, height);
-		} else if (height_im > height) {
+		else if (width_im < height_im)
 			factor = (double)height/(double)height_im;
-			System.out.printf("Scaling image (%dx%d) to fit container of %dx%d dimensions...\n", width_im, height_im, width, height);
-		} else {
+		else 
 			factor = 1;
-		}
+		
+		//if (factor > 1) factor = 1;
+		System.out.printf("Scaling image (%dx%d) to %dx%d dimensions...\n", width_im, height_im, (int)(factor*width_im), (int)(factor*height_im));
 		return imageData.scaledTo((int)(factor*width_im), (int)(factor*height_im));
 
 	}
@@ -79,11 +80,12 @@ public class ImageUtils {
 	 * Used for clearing images from frame.
 	 * @param c composite to clear
 	 */
-	public static void disposeChildren(Composite c) {
+	public static void disposeImages(Composite c) {
 		if (c.getChildren().length != 0) {
 			System.out.printf("Disposing previous image...\n");
 			for (Control ctrl : c.getChildren()) {
-				ctrl.dispose();
+				if (ctrl.getClass() == Canvas.class)
+					ctrl.dispose();
 			}
 		}
 	}
@@ -95,9 +97,10 @@ public class ImageUtils {
 	 */
 	public static void drawImageIn(Composite parent, ImageData imageData) {
 		
-		disposeChildren(parent);
-		int width = parent.getBounds().width;
-		int height = parent.getBounds().height;
+		disposeImages(parent);
+		int width = parent.getSize().x;
+		
+		int height = parent.getSize().y;
 		
 		final Image image = new Image(parent.getDisplay(), ImageUtils.scaleImageTo(imageData, width, height));
 		if (image != null) {
@@ -109,7 +112,11 @@ public class ImageUtils {
 				public void paintControl(PaintEvent arg0) {
 					arg0.gc.drawImage(image, 0, 0);							
 				}
-			});				
+			});		
+			for (Control ctrl : parent.getChildren()) {
+				pictureFrame.moveAbove(ctrl);
+			}
+
 		}	
 	}
 	
