@@ -10,7 +10,7 @@
     <property name="res.dir" location="res" />
 	<property name="lib.dir" location="lib"/>
 	<property name="opencv.lib.dir" location="opencv"/>
-	<property name="main-class" value="main.Run"/>     
+	<property name="main-class" value="ib.salami.main.Run"/>     
 
 	<!-- - - - - - - - - - - - - - - - - - 
           target: clean                      
